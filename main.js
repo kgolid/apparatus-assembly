@@ -4,21 +4,25 @@ import * as ut from './utils';
 const sketch = p => {
   let app_gen;
   let apparatus;
-  let scale = 12;
-  let shuffle = 100;
+  let scale = 10;
+  let shuffle = 120;
   let tick = 0;
+  let final_frame_duration = 20;
 
   p.setup = () => {
     p.createCanvas(800, 800);
-    p.background('#f6ddbb');
-    p.fill(255);
+    p.background('#eeeee5');
+    p.fill(0);
     p.frameRate(20);
-    p.noStroke();
-    app_gen = new ApparatusGenerator(20, 25, {
-      solidness: 1,
-      initiate_chance: 1,
+    p.strokeWeight(2);
+    p.stroke('#eeeee5');
+    app_gen = new ApparatusGenerator(14, 20, {
+      solidness: 0.5,
+      initiate_chance: 0.9,
+      vertical_chance: 0.7,
       roundness: 0.1,
-      colors: ['#d63644', '#396c68', '#f59647', '#4d3240', '#893f49', '#89e3b7', '#817c77']
+      extension_chance: 0.82,
+      colors: ['#000']
     });
 
     setup_apparatus();
@@ -29,27 +33,30 @@ const sketch = p => {
     apparatus.forEach(part => {
       part.x2 = part.x1 + part.w;
       part.y2 = part.y1 + part.h;
-      part.path = [
-        { x: part.x1, y: part.y1 },
-        { x: part.x1, y: part.y1 },
-        { x: part.x1, y: part.y1 },
-        { x: part.x1, y: part.y1 }
-      ];
+      part.path = [];
+
+      for (let i = 0; i < final_frame_duration; i++) {
+        part.path.push({ x: part.x1, y: part.y1 });
+      }
     });
 
-    for (let i = 4; i < shuffle; i++) {
+    let direction = p.floor(p.random(4));
+    let chosen = apparatus[p.floor(p.random(apparatus.length))];
+    for (let i = final_frame_duration; i < shuffle; i++) {
       apparatus.forEach(part => {
         part.path.push({ x: part.x1, y: part.y1 });
       });
-      let direction = p.floor(p.random(4));
-      let chosen = apparatus[p.floor(p.random(apparatus.length))];
+      let keep = p.random() < 0.8;
+      direction = keep ? direction : p.floor(p.random(4));
+      chosen = keep ? chosen : apparatus[p.floor(p.random(apparatus.length))];
       let neighborhood = get_neighborhood(chosen, apparatus, direction);
       shift_all(neighborhood, direction, i);
     }
   }
 
   p.draw = () => {
-    p.background('#f6ddbb');
+    p.background('#eeeee5');
+    p.translate((p.width - app_gen.xdim * scale) / 2, (p.height - app_gen.ydim * scale) / 2);
 
     if (tick >= shuffle) {
       setup_apparatus();
