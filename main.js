@@ -4,24 +4,26 @@ import * as ut from './utils';
 const sketch = p => {
   let app_gen;
   let apparatus;
-  let scale = 10;
+  let scale = 8;
   let shuffle = 120;
   let tick = 0;
-  let final_frame_duration = 20;
+  let final_frame_duration = 25;
+  let symmetric_assembly = true;
+  let movement_length = 0.85;
 
   p.setup = () => {
     p.createCanvas(800, 800);
     p.background('#eeeee5');
     p.fill(0);
-    p.frameRate(20);
-    p.strokeWeight(2);
+    p.frameRate(25);
+    p.strokeWeight(1);
     p.stroke('#eeeee5');
-    app_gen = new ApparatusGenerator(14, 20, {
-      solidness: 0.5,
+    app_gen = new ApparatusGenerator(22, 28, {
+      solidness: 0.6,
       initiate_chance: 0.9,
       vertical_chance: 0.7,
-      roundness: 0.1,
-      extension_chance: 0.82,
+      roundness: 0,
+      extension_chance: 0.85,
       colors: ['#000']
     });
 
@@ -30,28 +32,49 @@ const sketch = p => {
 
   function setup_apparatus() {
     apparatus = app_gen.generate();
-    apparatus.forEach(part => {
-      part.x2 = part.x1 + part.w;
-      part.y2 = part.y1 + part.h;
-      part.path = [];
-
-      for (let i = 0; i < final_frame_duration; i++) {
-        part.path.push({ x: part.x1, y: part.y1 });
-      }
-    });
-
-    let direction = p.floor(p.random(4));
+    populate_apparatus(apparatus);
+    let number_of_directions = symmetric_assembly ? 3 : 4;
+    let direction = random_dir(number_of_directions);
     let chosen = apparatus[p.floor(p.random(apparatus.length))];
+    let origin = symmetric_assembly ? get_with_id(apparatus, chosen.id) : [chosen];
     for (let i = final_frame_duration; i < shuffle; i++) {
       apparatus.forEach(part => {
         part.path.push({ x: part.x1, y: part.y1 });
       });
-      let keep = p.random() < 0.8;
-      direction = keep ? direction : p.floor(p.random(4));
-      chosen = keep ? chosen : apparatus[p.floor(p.random(apparatus.length))];
-      let neighborhood = get_neighborhood(chosen, apparatus, direction);
-      shift_all(neighborhood, direction, i);
+      let keep_moving = p.random() < movement_length;
+      if (!keep_moving) {
+        chosen = apparatus[p.floor(p.random(apparatus.length))];
+        origin = symmetric_assembly ? get_with_id(apparatus, chosen.id) : [chosen];
+        direction = symmetric_assembly && origin.length === 1 ? random_dir(2) : random_dir(number_of_directions);
+      }
+      if (symmetric_assembly) {
+        let pair = get_with_id(apparatus, chosen.id);
+
+        if (direction === mirror(direction)) {
+          let neighborhood = get_neighborhood(pair, apparatus, direction);
+          shift_all(neighborhood, direction, i);
+        } else if (pair.length !== 1) {
+          let neighborhood_left = get_neighborhood([pair[0]], apparatus, mirror(direction));
+          let neighborhood_right = get_neighborhood([pair[1]], apparatus, direction);
+          shift_all(neighborhood_left, mirror(direction), i);
+          shift_all(neighborhood_right, direction, i);
+        }
+      } else {
+        let neighborhood = get_neighborhood([chosen], apparatus, direction);
+        shift_all(neighborhood, direction, i);
+      }
     }
+  }
+
+  function populate_apparatus(app) {
+    app.forEach(part => {
+      part.x2 = part.x1 + part.w;
+      part.y2 = part.y1 + part.h;
+      part.path = [];
+      for (let i = 0; i < final_frame_duration; i++) {
+        part.path.push({ x: part.x1, y: part.y1 });
+      }
+    });
   }
 
   p.draw = () => {
@@ -68,8 +91,8 @@ const sketch = p => {
     tick++;
   };
 
-  function get_neighborhood(r1, rs, dir) {
-    let ns = [r1];
+  function get_neighborhood(ps, rs, dir) {
+    let ns = ps;
     let ms = ut.union(ns, ut.flatten(ns.map(n => get_neighbors(n, rs, dir)), equals), equals);
 
     while (ms.length > ns.length) {
@@ -111,10 +134,32 @@ const sketch = p => {
     r.path[time] = { x: r.x1, y: r.y1 };
   }
 
+  function random_dir(n) {
+    if (n === 2) return p.random() > 0.5 ? 0 : 2; // Up or down (50/50)
+    if (n === 3) return p.random() > 0.5 ? 1 : p.random() > 0.5 ? 2 : 0; // Up, right or down (25/50/25)
+    return p.floor(p.random(n)); // Up, right, down or left (25/25/25/25)
+  }
+
+  function mirror(dir) {
+    if (dir == 0 || dir == 2) return dir;
+    if (dir == 1) return 3;
+    if (dir == 3) return 1;
+  }
+
+  function get_with_id(rs, id) {
+    return rs.filter(r => r.id === id);
+  }
+
   function display_rect(r, scale, time) {
     p.fill(r.col ? r.col : '#fff');
     p.rect(r.path[time].x * scale, r.path[time].y * scale, r.w * scale, r.h * scale);
   }
+
+  p.keyPressed = () => {
+    if (p.keyCode === 83) {
+      symmetric_assembly = !symmetric_assembly;
+    }
+  };
 };
 
 new p5(sketch);
