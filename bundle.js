@@ -252,40 +252,47 @@
   const sketch = p => {
     let app_gen;
     let apparatus;
-    let scale = 8;
-    let shuffle = 120;
+    let scale = 6;
+    let shuffle = 200;
     let tick = 0;
     let final_frame_duration = 25;
     let symmetric_assembly = true;
-    let movement_length = 0.85;
+    let movement_length = 0.8;
 
     p.setup = () => {
       p.createCanvas(800, 800);
-      p.background('#eeeee5');
+      p.background('#fffbd6');
       p.fill(0);
-      p.frameRate(25);
-      p.strokeWeight(1);
-      p.stroke('#eeeee5');
-      app_gen = new index(22, 28, {
-        solidness: 0.6,
+      p.frameRate(30);
+      p.strokeWeight(3);
+      p.stroke('#5e1a13');
+      //p.noStroke();
+      app_gen = new index(26, 36, {
+        solidness: 0.5,
         initiate_chance: 0.9,
-        vertical_chance: 0.7,
+        extension_chance: 0.86,
+        vertical_chance: 0.5,
         roundness: 0,
-        extension_chance: 0.85,
-        colors: ['#000']
+        group_size: 0.82,
+        colors: ['#bf5c32', '#efad57', '#69766f', '#f7e5cc', '#936454', '#9ed6cb', '#9d8f7f']
       });
 
       setup_apparatus();
     };
 
     function setup_apparatus() {
+      symmetric_assembly = true;
       apparatus = app_gen.generate();
       populate_apparatus(apparatus);
       let number_of_directions = symmetric_assembly ? 3 : 4;
-      let direction = random_dir(number_of_directions);
       let chosen = apparatus[p.floor(p.random(apparatus.length))];
       let origin = symmetric_assembly ? get_with_id(apparatus, chosen.id) : [chosen];
+      let direction = random_dir(number_of_directions);
+
       for (let i = final_frame_duration; i < shuffle; i++) {
+        if (i === shuffle / 2) symmetric_assembly = false;
+
+        number_of_directions = symmetric_assembly ? 3 : 4;
         apparatus.forEach(part => {
           part.path.push({ x: part.x1, y: part.y1 });
         });
@@ -326,8 +333,8 @@
     }
 
     p.draw = () => {
-      p.background('#eeeee5');
-      p.translate((p.width - app_gen.xdim * scale) / 2, (p.height - app_gen.ydim * scale) / 2);
+      p.background('#fffbd6');
+      p.translate((p.width - (app_gen.xdim + 2) * scale) / 2, (p.height - (app_gen.ydim + 2) * scale) / 2);
 
       if (tick >= shuffle) {
         setup_apparatus();
@@ -404,9 +411,8 @@
     }
 
     p.keyPressed = () => {
-      if (p.keyCode === 83) {
-        symmetric_assembly = !symmetric_assembly;
-      }
+      if (p.keyCode === 83) symmetric_assembly = !symmetric_assembly;
+      else if (p.keyCode === 80) p.saveCanvas('apparatus_assembly', 'png');
     };
   };
 
