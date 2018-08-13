@@ -79,7 +79,7 @@ const sketch = p => {
 
   p.draw = () => {
     p.background('#eeeee5');
-    p.translate((p.width - app_gen.xdim * scale) / 2, (p.height - app_gen.ydim * scale) / 2);
+    p.translate((p.width - (app_gen.xdim + 2) * scale) / 2, (p.height - (app_gen.ydim + 2) * scale) / 2);
 
     if (tick >= shuffle) {
       setup_apparatus();
