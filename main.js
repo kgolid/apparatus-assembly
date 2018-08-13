@@ -156,9 +156,8 @@ const sketch = p => {
   }
 
   p.keyPressed = () => {
-    if (p.keyCode === 83) {
-      symmetric_assembly = !symmetric_assembly;
-    }
+    if (p.keyCode === 83) symmetric_assembly = !symmetric_assembly;
+    else if (p.keyCode === 80) p.saveCanvas('apparatus_assembly', 'png');
   };
 };
 
