@@ -261,11 +261,11 @@
 
     p.setup = () => {
       p.createCanvas(800, 800);
-      p.background('#fffbd6');
+      p.background('#eee8e2');
       p.fill(0);
       p.frameRate(30);
       p.strokeWeight(3);
-      p.stroke('#5e1a13');
+      p.stroke('#5c3936');
       //p.noStroke();
       app_gen = new index(26, 36, {
         solidness: 0.5,
@@ -274,7 +274,7 @@
         vertical_chance: 0.5,
         roundness: 0,
         group_size: 0.82,
-        colors: ['#bf5c32', '#efad57', '#69766f', '#f7e5cc', '#936454', '#9ed6cb', '#9d8f7f']
+        colors: ['#dfa372', '#b76254', '#878a87', '#e8e0d4', '#cbdbc8', '#b29e91', '#9f736c']
       });
 
       setup_apparatus();
@@ -333,7 +333,7 @@
     }
 
     p.draw = () => {
-      p.background('#fffbd6');
+      p.background('#eee8e2');
       p.translate((p.width - (app_gen.xdim + 2) * scale) / 2, (p.height - (app_gen.ydim + 2) * scale) / 2);
 
       if (tick >= shuffle) {
