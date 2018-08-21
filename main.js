@@ -2,7 +2,7 @@ import ApparatusGenerator from 'apparatus-generator';
 import * as ut from './utils';
 
 const sketch = p => {
-  let app_gen;
+  let app_gen, apparatus;
   let scale = 6;
   let shuffle = 200;
   let tick = 0;
@@ -32,7 +32,7 @@ const sketch = p => {
 
   function setup_apparatus() {
     symmetric_assembly = true;
-    let apparatus = app_gen.generate();
+    apparatus = app_gen.generate();
     populate_apparatus(apparatus);
 
     let chosen, origin, direction;
@@ -58,7 +58,6 @@ const sketch = p => {
         shift_all(neighborhood_right, direction, i);
       }  
     }
-    clean_board();
   }
 
   function populate_apparatus(app) {
@@ -70,10 +69,6 @@ const sketch = p => {
         part.path.push({ x: part.x1, y: part.y1 });
       }
     });
-  }
-
-  function clean_board() {
-
   }
 
   p.draw = () => {

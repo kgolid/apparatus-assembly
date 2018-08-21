@@ -273,7 +273,7 @@
     }
 
   const sketch = p => {
-    let app_gen;
+    let app_gen, apparatus;
     let scale = 6;
     let shuffle = 200;
     let tick = 0;
@@ -303,7 +303,7 @@
 
     function setup_apparatus() {
       symmetric_assembly = true;
-      let apparatus = app_gen.generate();
+      apparatus = app_gen.generate();
       populate_apparatus(apparatus);
 
       let chosen, origin, direction;
