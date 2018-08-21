@@ -42,7 +42,7 @@ const sketch = p => {
 
       apparatus.forEach(part => {part.path.push({ x: part.x1, y: part.y1 });});
       if (start_from_new_part) {
-        chosen = apparatus[p.floor(p.random(apparatus.length))];
+        chosen = ut.get_random_from(apparatus);
         origin = symmetric_assembly ? get_with_id(apparatus, chosen.id) : [chosen];
         direction = symmetric_assembly && origin.length === 1 ? ut.random_dir(2) : ut.random_dir(symmetric_assembly ? 3 : 4);
       }

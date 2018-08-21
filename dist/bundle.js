@@ -251,6 +251,10 @@
     return xs.reduce((acc, val) => union(acc, val, eq), []);
   }
 
+  function get_random_from(list) {
+    return list[Math.floor(Math.random(list.length))]
+  }
+
   // ---- Direction utils ----
 
     // Get random direction among n choices.
@@ -313,7 +317,7 @@
 
         apparatus.forEach(part => {part.path.push({ x: part.x1, y: part.y1 });});
         if (start_from_new_part) {
-          chosen = apparatus[p.floor(p.random(apparatus.length))];
+          chosen = get_random_from(apparatus);
           origin = symmetric_assembly ? get_with_id(apparatus, chosen.id) : [chosen];
           direction = symmetric_assembly && origin.length === 1 ? random_dir(2) : random_dir(symmetric_assembly ? 3 : 4);
         }

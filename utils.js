@@ -17,6 +17,10 @@ function flatten(xs, eq) {
   return xs.reduce((acc, val) => union(acc, val, eq), []);
 }
 
+function get_random_from(list) {
+  return list[Math.floor(Math.random(list.length))]
+}
+
 // ---- Direction utils ----
 
   // Get random direction among n choices.
@@ -38,4 +42,4 @@ function flatten(xs, eq) {
     return dir == 0 || dir == 2;
   }
 
-export { contains, union, flatten, random_dir, mirror, is_vertical };
+export { contains, union, flatten, get_random_from, random_dir, mirror, is_vertical };
