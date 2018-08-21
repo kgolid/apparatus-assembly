@@ -252,7 +252,7 @@
   }
 
   function get_random_from(list) {
-    return list[Math.floor(Math.random(list.length))]
+    return list[Math.floor(Math.random() * list.length)]
   }
 
   // ---- Direction utils ----
