@@ -1,4 +1,5 @@
 import ApparatusGenerator from 'apparatus-generator';
+import * as tome from 'chromotome';
 import * as ut from './utils';
 
 const sketch = p => {
@@ -26,7 +27,7 @@ const sketch = p => {
       vertical_chance: 0.5,
       roundness: 0,
       group_size: 0.82,
-      colors: ['#dfa372', '#b76254', '#878a87', '#e8e0d4', '#cbdbc8', '#b29e91', '#9f736c']
+      colors: tome.get('retro-washedout').colors
     });
 
     setup_apparatus();

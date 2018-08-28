@@ -11,18 +11,17 @@
     "url": "git://github.com/kgolid/apparatus-assemply.git"
   },
   "dependencies": {
-    "apparatus-generator": "^1.2.3"
+    "apparatus-generator": "^1.2.3",
+    "chromotome": "^1.0.3"
   },
   "devDependencies": {
     "rollup": "^0.64.1",
-    "rollup-plugin-commonjs": "^9.1.5",
+    "rollup-plugin-commonjs": "^9.1.6",
     "rollup-plugin-node-resolve": "^3.3.0"
   },
   "scripts": {
     "build": "rollup -c",
-    "dev": "rollup -c -w",
-    "test": "node test/test.js",
-    "pretest": "npm run build"
+    "dev": "rollup -c -w"
   },
   "files": [
     "dist"
