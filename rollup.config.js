@@ -15,6 +15,18 @@ export default [
       resolve(), // so Rollup can find `ms`
       commonjs() // so Rollup can convert `ms` to an ES module
     ]
+  },
+  {
+    input: 'main-multi.js',
+    output: {
+      name: 'multi-apparatus-assembly',
+      file: pkg.mainMulti,
+      format: 'umd'
+    },
+    plugins: [
+      resolve(), // so Rollup can find `ms`
+      commonjs() // so Rollup can convert `ms` to an ES module
+    ]
   }
   /*
   // CommonJS (for Node) and ES module (for bundlers) build.

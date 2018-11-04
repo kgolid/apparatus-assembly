@@ -3,43 +3,77 @@ import * as tome from 'chromotome';
 import * as ut from './utils';
 
 const sketch = p => {
-  let app_gen, apparatus;
-  let scale = 6;
-  let shuffle = 220;
+  let app_gen, apparata;
+  const number_of_apparata = 9;
+  const scale = 2.5;
+  const shuffle = 300;
   let tick = 0;
-  let final_frame_duration = 25;
+  const final_frame_duration = 120;
   let symmetric_assembly = true;
-  let movement_length = 0.82;
+  const movement_length = 0.85;
+  const row_length = 3;
 
   p.setup = () => {
-    p.createCanvas(800, 800);
+    p.createCanvas(1200, 1000);
     p.background('#eee8e2');
     p.fill(0);
-    p.frameRate(30);
-    p.strokeWeight(3);
+    p.frameRate(40);
+    p.strokeWeight(1.5);
     p.stroke('#5c3936');
-    app_gen = new ApparatusGenerator(26, 36, {
+
+    apparata = [];
+    app_gen = new ApparatusGenerator(25, 35, {
       solidness: 0.5,
       initiate_chance: 0.9,
-      extension_chance: 0.86,
-      vertical_chance: 0.5,
+      extension_chance: 0.88,
+      vertical_chance: 0.6,
       roundness: 0,
       group_size: 0.82,
       colors: tome.get('retro-washedout').colors
     });
 
-    setup_apparatus();
+    for (let i = 0; i < number_of_apparata / row_length; i++) {
+      setup_apparatus(row_length);
+    }
   };
 
-  function setup_apparatus() {
-    symmetric_assembly = true;
-    apparatus = app_gen.generate();
-    populate_apparatus(apparatus);
+  function setup_apparatus(n) {
+    let apparatus = app_gen.generate();
 
+    for (let i = 0; i < n; i++) {
+      let extra_shuffle = p.floor(p.random(100));
+      let animatable_app = populate_apparatus(apparatus, extra_shuffle);
+      animate_apparatus(animatable_app, extra_shuffle);
+      apparata.push(animatable_app);
+    }
+  }
+
+  function populate_apparatus(app, extra_shuffle) {
+    let new_app = [];
+    app.forEach(part => {
+      let new_part = {
+        ...part,
+        x2: part.x1 + part.w,
+        y2: part.y1 + part.h,
+        path: []
+      };
+      for (let i = 0; i < final_frame_duration - extra_shuffle; i++) {
+        new_part.path.push({ x: new_part.x1, y: new_part.y1 });
+      }
+      new_app.push(new_part);
+    });
+    return new_app;
+  }
+
+  function animate_apparatus(apparatus, extra_shuffle) {
+    symmetric_assembly = true;
     let chosen, origin, direction;
     let start_from_new_part = true;
-    for (let i = final_frame_duration; i < shuffle; i++) {
-      if (i === shuffle / 2) symmetric_assembly = false;
+    let actual_ff_duration = final_frame_duration - extra_shuffle;
+    for (let i = actual_ff_duration; i < shuffle; i++) {
+      if (i - actual_ff_duration >= (shuffle - actual_ff_duration) / 2) {
+        symmetric_assembly = false;
+      }
 
       apparatus.forEach(part => {
         part.path.push({ x: part.x1, y: part.y1 });
@@ -76,33 +110,40 @@ const sketch = p => {
     }
   }
 
-  function populate_apparatus(app) {
-    app.forEach(part => {
-      part.x2 = part.x1 + part.w;
-      part.y2 = part.y1 + part.h;
-      part.path = [];
-      for (let i = 0; i < final_frame_duration; i++) {
-        part.path.push({ x: part.x1, y: part.y1 });
-      }
-    });
-  }
-
   p.draw = () => {
     p.background('#eee8e2');
     p.translate(
-      (p.width - (app_gen.xdim + 2) * scale) / 2,
-      (p.height - (app_gen.ydim + 2) * scale) / 2
+      (p.width - (app_gen.xdim + 2) * scale) / (row_length + 1),
+      (p.height - (app_gen.ydim + 2) * scale) / 6
     );
 
     if (tick >= shuffle) {
-      setup_apparatus();
+      apparata = [];
+      for (let i = 0; i < number_of_apparata / row_length; i++) {
+        setup_apparatus(row_length);
+      }
       tick = 0;
     }
-    apparatus.forEach(part => {
-      display_rect(part, scale, shuffle - tick - 1);
-    });
+
+    for (let i = 0; i < apparata.length; i++) {
+      display_apparatus(apparata[i]);
+      p.translate((p.width - (app_gen.xdim + 2) * scale) / (row_length + 1), 0);
+      if (i % row_length === row_length - 1)
+        p.translate(
+          (-row_length * (p.width - (app_gen.xdim + 2) * scale)) /
+            (row_length + 1),
+          (p.height - (app_gen.ydim + 2) * scale) / 3
+        );
+    }
+
     tick++;
   };
+
+  function display_apparatus(appar) {
+    appar.forEach(part => {
+      display_rect(part, scale, shuffle - tick - 1);
+    });
+  }
 
   function get_neighborhood(ps, rs, dir) {
     let ns = ps;

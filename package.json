@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "dist/bundle.js",
+  "mainMulti": "dist/bundle-multi.js",
   "keywords": [],
   "author": "Kjetil Golid",
   "license": "MIT",
